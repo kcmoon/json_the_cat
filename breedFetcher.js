@@ -1,20 +1,31 @@
 const request = require('request');
-const args = process.argv.slice(2);
 
-request("https://api.thecataplllli.com/v1/breeds/search?q=" + args[0], (error, response, body) => {
-  if (error !== undefined) {
-    console.log("An error has occured.");
-    return;
-  }
-  
-  const data = JSON.parse(body);
+const fetchBreedDescription = function(breedName, cb) {
 
-  if (error !== undefined) {
-    console.log("An error has occured.");
-  }
-  if (data.includes(args[0])) {
+  const url = "https://api.thecatapi.com/v1/breeds/search?q=" + breedName;
+
+  request(url, (error, response, body) => {
+    if (error) {
+      //console.log("An error has occured.");
+      cb(error, null);
+      return;
+    }
+
+    const data = JSON.parse(body);
     console.log(data);
-  }
-  console.log("Sorry, cat breed note found.");
-  
-});
+    if (!data[0]) {
+      //console.log("An error has occured.");
+      cb('breed not found', null);
+      return;
+    }
+   
+    cb(null, data[0].description);
+    //console.log("Sorry, cat breed note found.");
+    
+  });
+
+};
+
+module.exports = {
+  fetchBreedDescription
+};
